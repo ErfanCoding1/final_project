@@ -85,7 +85,7 @@ Create a repository on GitHub so that your work/commits are trackable. The repos
 
 1. **Visualization Service:**
 
-   - Implementing the service with html/css/javascript
+   - Implementing the service with html/css/javascript or any other technologies.
    - Showing data on charts and signals on a user friendly dashboard
      
 3. **Testing on Real-World Dataset:**
