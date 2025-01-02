@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingestion-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ingestion
+  template:
+    metadata:
+      labels:
+        app: ingestion
+    spec:
+      containers:
+        - name: ingestion-container
+          image: erfanerfan/ingestion
+          ports:
+            - containerPort: 5000
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+            requests:
+              cpu: "0.5"
+              memory: "512Mi"
+          env:
+            - name: FLASK_APP
+              value: "ingestion.py"
+            - name: FLASK_ENV
+              value: "production"

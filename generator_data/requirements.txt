@@ -1,0 +1,11 @@
+requests
+numpy
+psutil
+flask
+kafka
+confluent-kafka
+kafka-python
+kafka-python-ng
+six
+redis
+zookeeper
