@@ -83,5 +83,8 @@ class IngestApp:
         self.app.run(port=port)
 
 if __name__ == "__main__":
-	app = IngestApp(name="IngestApp", kafka_server='localhost:9092', kafka_topic='dataTopic')
+	app = IngestApp(
+	    name="IngestApp",
+	    kafka_server='kafka.kafka.svc.cluster.local:9092',
+	    kafka_topic='dataTopic')
 	app.run(port=5000)

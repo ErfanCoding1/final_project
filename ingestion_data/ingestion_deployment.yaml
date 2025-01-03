@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ingestion-deployment
+  namespace: kafka
 spec:
   replicas: 3
   selector:
@@ -14,7 +15,7 @@ spec:
     spec:
       containers:
         - name: ingestion-container
-          image: erfanerfan/ingestion
+          image: sinasedghi/ingestion
           ports:
             - containerPort: 5000
           resources:
@@ -29,3 +30,21 @@ spec:
               value: "ingestion.py"
             - name: FLASK_ENV
               value: "production"
+            - name: KAFKA_SERVER
+              value: "kafka:9092"  # Address of Kafka service
+            - name: KAFKA_TOPIC
+              value: "dataTopic"   # Kafka topic name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingestion-service
+  namespace: kafka
+spec:
+  selector:
+    app: ingestion
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+
