@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: data-generator-deployment
-  namespace: kafka  # اضافه کردن این خط
+  namespace: kafka  
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: data-generator
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: generator-container
-          image: erfanerfan/generator
+          image: erfanerfan/generator:latest
           resources:
             limits:
               cpu: "500m"

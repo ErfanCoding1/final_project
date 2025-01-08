@@ -15,7 +15,7 @@ p.cpu_affinity([0])  # Pin to the first core.
 stocks = ["AAPL", "GOOGL", "AMZN", "MSFT", "TSLA"]
 
 # API endpoint to send the generated data
-api_endpoint = "http://localhost:5000/ingest"
+api_endpoint = "http://ingestion-service:5000/ingest"
 
 
 def generate_data():
@@ -97,6 +97,8 @@ def send_data(data):
             data), headers={"Content-Type": "application/json"})
         if response.status_code != 200:
             print(f"Failed to send data: {data}. Response: {response.text}")
+        else:
+            print(f"Successfully sent: {data}")
     except Exception as e:
         print(f"Error occurred: {e}")
 

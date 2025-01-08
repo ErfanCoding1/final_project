@@ -9,6 +9,7 @@ class IngestApp:
         self.app = Flask(name)
         self.producer = KafkaProducer(
             bootstrap_servers=kafka_server,
+            api_version=(0,11,5),
             value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
         self.kafka_topic = kafka_topic
@@ -80,7 +81,7 @@ class IngestApp:
             return f"Error fetching data: {str(e)}", 500
 
     def run(self, port=5000):
-        self.app.run(port=port)
+        self.app.run(host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
 	app = IngestApp(
