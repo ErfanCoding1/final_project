@@ -1,10 +1,11 @@
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kafka
   namespace: kafka
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: kafka
@@ -44,8 +45,10 @@ metadata:
   name: kafka
   namespace: kafka
 spec:
+  type: LoadBalancer
   ports:
   - port: 9092
     targetPort: client
   selector:
     app: kafka
+
