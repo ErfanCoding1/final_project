@@ -4,7 +4,7 @@ metadata:
   name: zookeeper
   namespace: kafka
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: zookeeper
@@ -22,6 +22,8 @@ spec:
         env:
         - name: ALLOW_ANONYMOUS_LOGIN
           value: "yes"
+        - name: ZOOKEEPER_CLIENT_PORT_ADDRESS
+          value: "zookeeper.kafka.svc.cluster.local"
 ---
 apiVersion: v1
 kind: Service
