@@ -4,7 +4,7 @@ metadata:
   name: zookeeper
   namespace: kafka
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: zookeeper
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: zookeeper
-        image: bitnami/zookeeper:latest
+        image: bitnami/zookeeper:3.8.4
         ports:
         - containerPort: 2181
           name: client
