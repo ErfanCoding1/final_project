@@ -27,9 +27,9 @@ spec:
         - name: ALLOW_PLAINTEXT_LISTENER
           value: "yes"
         - name: KAFKA_CFG_LISTENERS
-          value: PLAINTEXT://:9092
-        - name: KAFKA_CFG_ADVERTISED_LISTENERS
-          value: PLAINTEXT://kafka.kafka.svc.cluster.local:9092
+          value: "PLAINTEXT://:9092"
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: "PLAINTEXT://kafka.kafka.svc.cluster.local:9092"
         resources:
           requests:
             memory: "1Gi"

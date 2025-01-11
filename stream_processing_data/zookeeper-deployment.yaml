@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: zookeeper
-        image: bitnami/zookeeper:latest
+        image: bitnami/zookeeper:3.8.4
         ports:
         - containerPort: 2181
           name: client
