@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-master
+  namespace: kafka
+  labels:
+    app: spark
+    component: master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark
+      component: master
+  template:
+    metadata:
+      labels:
+        app: spark
+        component: master
+    spec:
+      containers:
+      - name: spark-master
+        image: spark-image:latest  # نام تصویر Docker که ایجاد کرده‌اید
+        env:
+        - name: SPARK_MODE
+          value: master
+        ports:
+        - containerPort: 7077  # پورت ارتباط Master
+        - containerPort: 8080
