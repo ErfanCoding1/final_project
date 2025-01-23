@@ -5,19 +5,25 @@ metadata:
   namespace: kafka
   labels:
     app: spark
-    component: worker
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: spark
-      component: worker
+      role: worker
   template:
     metadata:
       labels:
         app: spark
-        component: worker
+        role: worker
     spec:
       containers:
       - name: spark-worker
-        image: spark-image:latest  #
+        image: bitnami/spark:latest
+        env:
+        - name: SPARK_MODE
+          value: worker
+        - name: SPARK_MASTER_URL
+          value: spark://spark-master:7077
+        ports:
+        - containerPort: 8081

@@ -9,3 +9,4 @@ kafka-python-ng
 six
 redis
 zookeeper
+pyspark

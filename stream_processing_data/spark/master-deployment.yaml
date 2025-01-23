@@ -1,29 +1,59 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spark-master
+  name: spark-master1
   namespace: kafka
   labels:
     app: spark
-    component: master
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: spark
-      component: master
+      role: master
   template:
     metadata:
       labels:
         app: spark
-        component: master
+        role: master
     spec:
       containers:
-      - name: spark-master
-        image: spark-image:latest  # نام تصویر Docker که ایجاد کرده‌اید
+      - name: spark-master1
+        image: bitnami/spark:latest
+        ports:
+        - containerPort: 7077
+        - containerPort: 8080
         env:
         - name: SPARK_MODE
           value: master
-        ports:
-        - containerPort: 7077  # پورت ارتباط Master
-        - containerPort: 8080
+       # - name: SPARK_MASTER_HOST
+        #  value: spark-master.kafka.svc.cluster.local
+        #resources:
+         # requests:
+          #  memory: "1Gi"
+           # cpu: "500m"
+          #limits:
+           # memory: "2Gi"
+            #cpu: "1"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-master1
+  namespace: kafka
+  labels:
+    app: spark
+    role: master
+spec:
+  ports:
+  - port: 7077
+    targetPort: 7077
+    name: spark-master-port
+  - port: 8080
+    targetPort: 8080
+    name: spark-web-ui
+  selector:
+    app: spark
+    role: master
+  type: NodePort

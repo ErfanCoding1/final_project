@@ -1,16 +1,13 @@
-FROM bitnami/spark:latest
+FROM python:3.9-slim
+
+WORKDIR /app
+
+COPY spark-streaming.py /app/spark-streaming.py
+
+RUN pip install pyspark requests
 
 
-ENV SPARK_MODE=master
-ENV SPARK_MASTER_URL=spark://spark-master.kafka.svc.cluster.local:7077
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
 
-EXPOSE 7077 8080 8081
-
-
-CMD if [ "$SPARK_MODE" = "master" ]; then \
-        echo "Starting Spark Master..."; \
-        start-spark master; \
-    else \
-        echo "Starting Spark Worker..."; \
-        start-spark worker --master $SPARK_MASTER_URL; \
-    fi
+CMD ["python", "spark-streaming.py"]
