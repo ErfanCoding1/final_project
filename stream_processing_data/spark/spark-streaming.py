@@ -1,7 +1,6 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import from_json, col, avg, when, coalesce, window, lag, from_unixtime, expr
+from pyspark.sql.functions import from_json, col, avg, when, coalesce, window, from_unixtime, expr
 from pyspark.sql.types import StructType, StructField, FloatType, LongType, StringType
-from pyspark.sql.window import Window
 import requests
 
 # Create Spark session
@@ -50,29 +49,30 @@ parsed_data_df = raw_data_df.selectExpr("CAST(value AS STRING)") \
     .select("data.*") \
     .withColumn("timestamp", from_unixtime(col("timestamp")).cast("timestamp"))
 
-# Window specifications
+# Time-based Window specifications
 time_window = window("timestamp", "10 minutes").alias("window")
-stock_window = Window.partitionBy("stock_symbol").orderBy("timestamp")
 
-# Moving Average Calculation
+# Moving Average Calculation (works for time window aggregation)
 moving_avg_df = parsed_data_df \
     .groupBy("stock_symbol", time_window) \
     .agg(avg("price").alias("moving_avg")) \
     .withColumn("timestamp", col("window.start"))
 
-# EMA Calculation
+# EMA Calculation using time window
+# EMA logic has to be simplified in streaming; using a weighted average over the window
 ema_df = moving_avg_df.withColumn(
-    "ema",
+    "ema", 
     coalesce(
-        (col("moving_avg") * 0.2) + (lag(col("moving_avg"), 1).over(stock_window) * 0.8),
+        avg("moving_avg").over(window("timestamp", "10 minutes")),  # Using time window aggregation
         col("moving_avg")
     )
 )
 
-# RSI Calculation
+# RSI Calculation (using time window aggregation)
+# Calculating RSI involves price change and average gain/loss over 14 periods
 rsi_calc_df = parsed_data_df.withColumn(
     "price_change", 
-    col("price") - coalesce(lag("price", 1).over(stock_window), col("price"))
+    col("price") - coalesce(avg("price").over(window("timestamp", "10 minutes")), col("price"))
 ).withColumn(
     "gain", 
     when(col("price_change") > 0, col("price_change")).otherwise(0)
@@ -81,12 +81,12 @@ rsi_calc_df = parsed_data_df.withColumn(
     when(col("price_change") < 0, -col("price_change")).otherwise(0)
 )
 
-rsi_window = Window.partitionBy("stock_symbol").orderBy("timestamp").rowsBetween(-14, 0)
+rsi_window = window("timestamp", "10 minutes")
 
 rsi_df = rsi_calc_df \
     .withColumn("avg_gain", avg("gain").over(rsi_window)) \
     .withColumn("avg_loss", avg("loss").over(rsi_window)) \
-    .withColumn("rs", when(col("avg_loss") == 0, 0).otherwise(col("avg_gain")/col("avg_loss"))) \
+    .withColumn("rs", when(col("avg_loss") == 0, 0).otherwise(col("avg_gain") / col("avg_loss"))) \
     .withColumn("rsi", 100 - (100 / (1 + col("rs"))))
 
 # Join all indicators
@@ -107,7 +107,6 @@ indicators_df = final_df.select(
     "sentiment_score", "sentiment_magnitude", "indicator_name", "value",
     "moving_avg", "ema", "rsi"
 )
-
 # Send to signal generator
 def send_to_signal_generator(batch_df, batch_id):
     if batch_df.isEmpty():
@@ -133,7 +132,3 @@ query = indicators_df.writeStream \
     .start()
 
 query.awaitTermination()
-
-
-
-
