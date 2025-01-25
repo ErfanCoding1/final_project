@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signal-generator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: signal-generator
+  template:
+    metadata:
+      labels:
+        app: signal-generator
+    spec:
+      containers:
+      - name: signal-generator
+        image: erfanerfan/signal-generator:latest
+        ports:
+        - containerPort: 5000  # پورت FastAPI
+        - containerPort: 8765  # پورت وب‌ساکت
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: signal-generator-service
+spec:
+  selector:
+    app: signal-generator
+  ports:
+    - name: http-api
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+    - name: websocket
+      protocol: TCP
+      port: 8765
+      targetPort: 8765
