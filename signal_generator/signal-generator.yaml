@@ -15,6 +15,7 @@ spec:
       containers:
       - name: signal-generator
         image: erfanerfan/signal-generator:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 5000  # پورت FastAPI
         - containerPort: 8765  # پورت وب‌ساکت
