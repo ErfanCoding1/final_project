@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: spark-streaming
-        image: sinasedghi/spark-streaming:latest
+        image: erfanerfan/spark-streaming:latest
         imagePullPolicy: Never
         env:
         - name: SPARK_MASTER_URL

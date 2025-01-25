@@ -58,7 +58,7 @@ moving_avg_df = parsed_df.withColumn("moving_avg", avg("price").over(window_spec
 alpha = 0.2
 ema_df = moving_avg_df.withColumn(
     "ema",
-    col("price") * alpha + 
+    col("price") * alpha +
     coalesce(lag("price", 1).over(window_spec), col("price")) * (1 - alpha)
 )
 
