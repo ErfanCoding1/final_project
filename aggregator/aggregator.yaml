@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aggregator-service
+  namespace: kafka
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aggregator-service
+  template:
+    metadata:
+      labels:
+        app: aggregator-service
+    spec:
+      containers:
+      - name: aggregator
+        image: erfanerfan/aggregator:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8001
+        livenessProbe:
+          httpGet:
+            path: /stats
+            port: 8001
+          initialDelaySeconds: 15
+          periodSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aggregator-service
+  namespace: kafka
+spec:
+  selector:
+    app: aggregator-service
+  ports:
+    - name: http
+      port: 8001
+      targetPort: 8001

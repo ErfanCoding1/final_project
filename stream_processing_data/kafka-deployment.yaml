@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+  namespace: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kafka
+        image: bitnami/kafka:latest
+        ports:
+        - containerPort: 9092
+          name: client
+        env:
+        - name: KAFKA_BROKER_ID
+          value: "1"
+        - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+          value: zookeeper.kafka.svc.cluster.local:2181
+        - name: ALLOW_PLAINTEXT_LISTENER
+          value: "yes"
+        - name: KAFKA_CFG_LISTENERS
+          value: "PLAINTEXT://:9092"
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: "PLAINTEXT://kafka.kafka.svc.cluster.local:9092"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1"
+      volumes:
+      - name: kafka-data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: kafka
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 9092
+    targetPort: client
+  selector:
+    app: kafka
+

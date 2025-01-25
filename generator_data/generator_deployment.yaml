@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-generator-deployment
+  namespace: kafka  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-generator
+  template:
+    metadata:
+      labels:
+        app: data-generator
+    spec:
+      containers:
+        - name: generator-container
+          image: erfanerfan/generator:latest
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+

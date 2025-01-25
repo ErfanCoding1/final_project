@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-master1
+  namespace: kafka
+  labels:
+    app: spark
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark
+      role: master
+  template:
+    metadata:
+      labels:
+        app: spark
+        role: master
+    spec:
+      containers:
+      - name: spark-master
+        image: bitnami/spark:latest
+        ports:
+        - containerPort: 7077
+        - containerPort: 8080
+        env:
+        - name: SPARK_MODE
+          value: master
+        - name: SPARK_MASTER_HOST
+          value: "0.0.0.0"  # Bind to all interfaces
+        - name: SPARK_MASTER_PORT
+          value: "7077"     # Default master port
+        - name: SPARK_MASTER_WEBUI_PORT
+          value: "8080"     # Default web UI port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-master1
+  namespace: kafka
+  labels:
+    app: spark
+    role: master
+spec:
+  ports:
+  - port: 7077
+    targetPort: 7077
+    name: spark-master-port
+  - port: 8080
+    targetPort: 8080
+    name: spark-web-ui
+  selector:
+    app: spark
+    role: master
+  type: ClusterIP
