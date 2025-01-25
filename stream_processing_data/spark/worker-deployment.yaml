@@ -24,6 +24,6 @@ spec:
         - name: SPARK_MODE
           value: worker
         - name: SPARK_MASTER_URL
-          value: spark://spark-master:7077
+          value: spark://spark-master1.kafka.svc.cluster.local:7077
         ports:
         - containerPort: 8081

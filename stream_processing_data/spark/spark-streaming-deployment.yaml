@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spark-streaming
+  namespace: kafka
+  labels:
+    app: spark-streaming
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spark-streaming
+  template:
+    metadata:
+      labels:
+        app: spark-streaming
+    spec:
+      containers:
+      - name: spark-streaming
+        image: sinasedghi/spark-streaming:latest
+        imagePullPolicy: Never
+        env:
+        - name: SPARK_MASTER_URL
+          value: spark://spark-master1.kafka.svc.cluster.local:7077
+        - name: KAFKA_BROKER_URL
+          value: kafka.kafka.svc.cluster.local:9092
+        ports:
+        - containerPort: 8080
+
