@@ -6,8 +6,17 @@ import requests
 import json
 import websockets
 import asyncio
+import logging
 
 app = FastAPI()
+
+# تنظیمات لاگینگ
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+
+logger = logging.getLogger("SignalProcessor")
 
 # مدل داده‌های دریافتی از اسپارک
 class IndicatorData(BaseModel):
@@ -66,14 +75,21 @@ async def process_indicators(data: IndicatorData):
     # ذخیره سیگنال
     live_signals[data.stock_symbol] = signal
 
+    # ثبت سیگنال در لاگ
+    logger.info(f"Generated signal: {json.dumps(signal)}")
+
     # ارسال به Notification Service (اختیاری)
     try:
         response = requests.post(
             "http://notification-service:8000/notify",
             json=signal
         )
+        if response.status_code == 200:
+            logger.info(f"Notification sent successfully for {data.stock_symbol}")
+        else:
+            logger.warning(f"Notification failed for {data.stock_symbol}: {response.status_code}")
     except Exception as e:
-        print(f"Failed to send notification: {str(e)}")
+        logger.error(f"Failed to send notification: {str(e)}")
 
     return {"status": "signal processed"}
 
@@ -83,7 +99,7 @@ async def websocket_handler(websocket, path):
         await websocket.send(json.dumps(live_signals))
         await asyncio.sleep(1)
 
-if __name__ == "__main__":
+if name == "main":
     import threading
 
     # راه‌اندازی وب‌ساکت
