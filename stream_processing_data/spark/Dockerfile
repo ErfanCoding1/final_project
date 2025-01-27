@@ -24,4 +24,5 @@ ENV PYTHONPATH=/usr/local/lib/python3.9/dist-packages/pyspark/python:/usr/local/
 
 # Command to run the Spark Streaming application
 #CMD ["python3", "spark-streaming.py"]
-CMD ["spark-submit", "--packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.3", "--master", "local[*]", "/app/spark-streaming.py"]
+#CMD ["spark-submit", "--packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.3", "--master", "local[*]", "/app/spark-streaming.py"]
+CMD ["spark-submit", "--packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.3", "/app/spark-streaming.py"]
